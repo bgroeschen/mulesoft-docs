@@ -3,10 +3,7 @@
 
 link:/mule-user-guide/v/3.9/dataweave[DataWeave] allows you to process several different link:/mule-user-guide/v/3.9/dataweave-formats[types of data]. For most of these types, you can import a schema that describes the input structure in order to have access to valuable metadata at design time. See link:/anypoint-studio/v/6/input-output-structure-transformation-studio-task[To Define Input and Output Structure of a Transformation].
 
-DataWeave uses a YAML format called *FFD (for Flat File Definition)* to represent flat file schemas. The FFD format is very flexible to support a range of use cases, but is based around the concepts of *elements*, *composites*, *segments*, *groups* and *structures*.
-
-
-Schemas must be written in Flat File Schema Language, with a *.ffs* extension. This language is very similar to EDI Schema Language (ESL), which is also accepted by Anypoint Studio.
+DataWeave uses a YAML format called *FFD (for Flat File Definition)* to represent flat file schemas. This language is very similar to EDI Schema Language (ESL), which is also accepted by Anypoint Studio. The FFD format is very flexible to support a range of use cases, but is based around the concepts of *elements*, *composites*, *segments*, *groups* and *structures*. Schemas should be saved with a *.ffd* extension, so that Studio recognizes them when importing metadata.
 
 On DataWeave, you can bind your input or your output to a flat file schema through a property. See link:/anypoint-studio/v/6/transform-message-component-concept-studio[About Transform Message Component] for instructions on how to do this through the Studio UI. If you want to do this through code, see link:/mule-user-guide/v/3.9/dataweave-formats#flat-file[DataWeave formats] for more information, and keep in mind that  the way these properties are set depends on if you're defining the input or the output.
 
@@ -141,9 +138,9 @@ structures:
   - { idRef: 'RQH' }
   - groupId: 'Batch'
     usage: O
-    count: '>1'
+    count: 'unbounded'
     items:
-    - { idRef: 'BCH' }
+    - { idRef: 'BCH', count: 1 }
     - { idRef: 'TDR', count: '>1' }
     - { idRef: 'BCF' }
   - { idRef: 'RQF' }
@@ -158,7 +155,7 @@ structures:
     count: '>1'
     items:
     - { idRef: 'BCH' }
-    - { idRef: 'TDR', count: '>1' }
+    - { idRef: 'TDR', count: 'unbounded' }
     - { idRef: 'BCF' }
   - { idRef: 'RSF' }
 segments:
@@ -325,7 +322,7 @@ The 'values' field may either give definitions inline or list references, elemen
 |idRef |The referenced element or composite id
 |name |The name of the value in the segment (optional, element or composite name used by default)
 |usage |Usage code, which may be M for Mandatory, O for Optional, or U for Unused (optional, "Mandatory" assumed if not specified)
-|count |Maximum repetition count value, which may be any number or the special value '>1' meaning any number of repeats (optional, count value of 1 is used if not specified)
+|count |Maximum repetition count value, which may be any number (no quotes) or one of two special values, _'>1'_ or _'unbounded'_, both of which mean any number of repeats (optional, count value of 1 is used if not specified)
 |===
 
 Inline value definitions use the _name_, _usage_, and _count_ key-value pairs from the reference form, combined with the composite or element key-value pairs defined below.
@@ -350,10 +347,10 @@ structures:
   data:
   - { idRef: 'HeaderFile' }
   - groupId: 'Data'
-    count: '>1'
+    count: 'unbounded'
     items:
     - { idRef: 'Ticket' }
-    - { idRef: 'Check', count: '>1' }
+    - { idRef: 'Check', count: 'unbounded' }
   - { idRef: 'EndFile' }
 segments:
 - id: 'HeaderFile'
@@ -389,7 +386,7 @@ Segment references are shown using a compact YAML syntax where the values for ea
 |Segment Property |Description
 |idRef |The referenced segment id
 |usage |Usage code, which may be M for Mandatory, O for Optional, or U for Unused (__likely to change for release__) (optional, Mandatory assumed if not specified)
-|count |Maximum repetition count value, which may be a number or the special value '>1' meaning any number of repeats (optional, count value of 1 is used by default)
+|count |Maximum repetition count value, which may be any number (no quotes) or one of two special values, _'>1'_ or _'unbounded'_, both of which mean any number of repeats (optional, count value of 1 is used if not specified)
 |===
 
 Inline segment definitions use the _usage_ and _count_ key-value pairs as for references, and combine these with the <<Segment Definitions, segment definition>> key-value pairs.
@@ -404,7 +401,7 @@ In the last example, group definitions are shown in expanded form, with key-valu
 |Value| Description
 |groupId |The group identifier
 |usage |Usage code, which may be M for Mandatory, O for Optional, or U for Unused (optional, defaults to M)
-|count |Maximum repetition count value, which may be a number or the special value '>1' meaning any number of repeats (optional, count value of 1 is used if not specified)
+|count |Maximum repetition count value, which may be any number (no quotes) or one of two special values, _'>1'_ or _'unbounded'_, both of which mean any number of repeats (optional, count value of 1 is used if not specified)
 |items |List of segments (and potentially nested groups) making up the group
 |===
 
@@ -426,10 +423,10 @@ Besides the choice of top-level form, you also have choices when it comes to rep
     data:
     - { idRef: 'HeaderFile' }
     - groupId: 'Data'
-      count: '>1'
+      count: 'unbounded'
       items:
       - { idRef: 'Ticket' }
-      - { idRef: 'Check', count: '>1' }
+      - { idRef: 'Check', count: 'unbounded' }
     - { idRef: 'EndFile' }
   segments:
   - id: 'HeaderFile'
@@ -533,10 +530,10 @@ Here's what an in-lined definition of the same structure would look like:
     data:
     - { idRef: 'HeaderFile' }
     - groupId: 'Data'
-      count: '>1'
+      count: 'unbounded'
       items:
       - { idRef: 'Ticket' }
-      - { idRef: 'Check', count: '>1' }
+      - { idRef: 'Check', count: 'unbounded' }
     - { idRef: 'EndFile' }
   segments:
   - id: 'HeaderFile'
@@ -603,10 +600,10 @@ Here's what an in-lined definition of the same structure would look like:
     data:
     - { idRef: 'HeaderFile' }
     - groupId: 'Data'
-      count: '>1'
+      count: 'unbounded'
       items:
-      - { idRef: 'Ticket' }
-      - { idRef: 'Check', count: '>1' }
+      - { idRef: 'Ticket', count: 1 }
+      - { idRef: 'Check', count: 'unbounded' }
     - { idRef: 'EndFile' }
   segments:
   - id: 'HeaderFile'
